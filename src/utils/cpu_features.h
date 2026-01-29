@@ -1,19 +1,13 @@
-#ifndef CPU_FEATURES_H
-#define CPU_FEATURES_H
+// simple example (Linux) using getauxval for HWCAP
+#include <sys/auxv.h>
+#include <stdint.h>
+#include <stdbool.h>
 
-class CPUFeatures {
-public:
-    static bool hasNEON();
-    static bool hasSME2();
-    static bool hasAVX2();
-    static bool hasSVE();
-    
-    static int getCoreCount();
-    static int getMaxFrequency();
-    
-private:
-    static bool neon_detected;
-    static bool sme2_detected;
-};
-
-#endif // CPU_FEATURES_H
+static inline bool cpu_has_neon() {
+    #ifdef HWCAP_NEON
+    unsigned long hwcap = getauxval(AT_HWCAP);
+    return (hwcap & HWCAP_NEON) != 0;
+    #else
+    return false;
+    #endif
+}
